@@ -26,33 +26,23 @@ without firing a false alarm, or wiring forty points without dragging forty link
 
 ---
 
-## Where the components live
+## The palette
 
-All eight appear under the **`GlineNetTools`** folder in the Workbench palette.
+All eight components sit in one folder. Open the **`GlineNetTools`** folder in the Workbench
+palette and drag what you need into a Wire Sheet.
 
-![Palette overview](docs/images/P0_palette_tree.png)
+![Palette](docs/images/00_palette.png)
 
-Drag a component from that folder into a Wire Sheet to create an instance.
-
----
-
-## The eight components
-
-![Wire Sheet overview](docs/images/00_wiresheet.png)
-
-*All eight placed in one folder. Each section below shows its palette entry, its Wire Sheet
-appearance and its property sheet.*
-
-| Type | Purpose | Category |
-|---|---|---|
-| [`BatchLinker`](#1-batchlinker--create-links-in-bulk) | Create point-to-point links in bulk | Efficiency |
-| [`BitDecode16`](#2-bitdecode16--split-a-16-bit-word) | Split a 16-bit word into 16 booleans | Decoding |
-| [`Sort7`](#3-sort7--rank-seven-inputs) | Sort 7 inputs, report which channel won | Selection |
-| [`EnumBits`](#4-enumbits--enum-set--bit-mask) | Convert enum sets ↔ integer bit masks | Protocol mapping |
-| [`NullShedNumeric`](#5-nullshednumeric--hold-then-release) | Hold last value, release after timeout | Comms debounce |
-| [`NullShedBoolean`](#6-nullshedboolean--hold-then-release) | Same, boolean | Comms debounce |
-| [`NullShedString`](#7-nullshedstring--hold-then-release) | Same, string | Comms debounce |
-| [`NullShedEnum`](#8-nullshedenum--hold-then-release) | Same, enum | Comms debounce |
+| Type | Purpose |
+|---|---|
+| `BatchLinker` | Create point-to-point links in bulk |
+| `BitDecode16` | Split a 16-bit word into 16 booleans |
+| `Sort7` | Sort 7 inputs, report which channel won |
+| `EnumBits` | Convert enum sets ↔ integer bit masks |
+| `NullShedNumeric` | Hold last value, release after timeout |
+| `NullShedBoolean` | Same, boolean |
+| `NullShedString` | Same, string |
+| `NullShedEnum` | Same, enum |
 
 ---
 
@@ -65,23 +55,19 @@ Dragging forty links in the Wire Sheet is slow and easy to mis-pair. `BatchLinke
 ORD queries, resolves them into two component sets, creates every link, and tells you how
 many succeeded — plus the reason for any that failed.
 
-### Palette
+### In the palette
 
-![BatchLinker in palette](docs/images/P_01_BatchLinker_palette.png)
+![BatchLinker palette](docs/images/01_BatchLinker_palette.png)
 
-### Wire Sheet
+### In a Wire Sheet
 
-![BatchLinker wire sheet](docs/images/01_BatchLinker_wiresheet.png)
-
-### Property sheet
-
-![BatchLinker properties](docs/images/08_batchlinker.png)
+![BatchLinker sample](docs/images/01_BatchLinker_sample.png)
 
 ### Properties
 
 | Property | Meaning |
 |---|---|
-| `sourceOrd` | ORD of the source set, e.g. `station:|slot:/Demo/SrcGrp` |
+| `sourceOrd` | ORD of the source set, e.g. `station:\|slot:/Demo/SrcGrp` |
 | `targetOrd` | ORD of the target set, same form |
 | `sourceSlot` | Slot on each source component, normally `out` |
 | `targetSlot` | Slot on each target component, e.g. `in1` |
@@ -163,17 +149,13 @@ A Modbus device returns one 16-bit status word where each bit means something di
 bit 0 = running, bit 3 = alarm, bit 10 = filter dirty. Downstream logic needs each bit as its
 own boolean point so it can be alarmed, trended and interlocked separately.
 
-### Palette
+### In the palette
 
-![BitDecode16 in palette](docs/images/P_02_BitDecode16_palette.png)
+![BitDecode16 palette](docs/images/02_BitDecode16_palette.png)
 
-### Wire Sheet
+### In a Wire Sheet
 
-![BitDecode16 wire sheet](docs/images/02_BitDecode16_wiresheet.png)
-
-### Property sheet
-
-![BitDecode16 properties](docs/images/01_bitdecode16.png)
+![BitDecode16 sample](docs/images/02_BitDecode16_sample.png)
 
 ### Properties
 
@@ -225,17 +207,13 @@ Seven chillers report their load. You need the most-loaded one — and you need 
 **which** chiller it is. Sorting the numbers alone loses that information, so `Sort7` also
 outputs the original channel number for every result.
 
-### Palette
+### In the palette
 
-![Sort7 in palette](docs/images/P_03_Sort7_palette.png)
+![Sort7 palette](docs/images/03_Sort7_palette.png)
 
-### Wire Sheet
+### In a Wire Sheet
 
-![Sort7 wire sheet](docs/images/03_Sort7_wiresheet.png)
-
-### Property sheet
-
-![Sort7 properties](docs/images/02_sort7.png)
+![Sort7 sample](docs/images/03_Sort7_sample.png)
 
 ### Properties
 
@@ -288,19 +266,9 @@ A BACnet or Modbus device reports a set of states as one integer bit mask (value
 bits 0, 2 and 5). Niagara wants to present that as a multi-select enum point. Sometimes you
 need the reverse: the operator picks three enum members and you must write back the integer.
 
-### Palette
+### In the palette
 
-![EnumBits in palette](docs/images/P_04_EnumBits_palette.png)
-
-### Wire Sheet
-
-![EnumBits wire sheet](docs/images/04_EnumBits_wiresheet.png)
-
-### Property sheet
-
-![EnumBits properties](docs/images/03_enumbits.png)
-
-*`Enum In` reads back as named bits, not raw integers.*
+![EnumBits palette](docs/images/04_EnumBits_palette.png)
 
 ### Properties
 
@@ -351,7 +319,7 @@ component through these two slots.
 
 ---
 
-## 5. NullShedNumeric — hold, then release
+## 5. NullShed — hold, then release
 
 ### What it is for
 
@@ -359,20 +327,17 @@ A 4G-connected device drops out for 30 seconds and the raw point goes null. If t
 reaches your alarm logic immediately you get a false "sensor failed" alarm and a nuisance
 ticket — every time the modem hiccups.
 
-`NullShedNumeric` keeps the last valid value flowing for `holdMillis`, and only releases a
-null once the timeout really expires.
+`NullShed` keeps the last valid value flowing for `holdMillis`, and only releases a null once
+the timeout really expires. Four variants cover the four value types Niagara works with:
+`NullShedNumeric`, `NullShedBoolean`, `NullShedString`, `NullShedEnum`.
 
-### Palette
+### In the palette
 
-![NullShedNumeric in palette](docs/images/P_05_NullShedNumeric_palette.png)
+![NullShed palette](docs/images/05_NullShed_palette.png)
 
-### Wire Sheet
+### In a Wire Sheet
 
-![NullShedNumeric wire sheet](docs/images/05_NullShedNumeric_wiresheet.png)
-
-### Property sheet
-
-![NullShedNumeric properties](docs/images/04_shednumeric.png)
+![NullShed sample](docs/images/05_NullShed_sample.png)
 
 ### Properties
 
@@ -402,115 +367,24 @@ null once the timeout really expires.
 
 ### Tested result
 
-`holdMillis = 5000`, value 88.5 written:
+`NullShedNumeric`, `holdMillis = 5000`, value 88.5 written:
 
 - `out` reads `88.50` immediately
 - six seconds later `out` is `{null}` and `shedCount = 1`
+
+### Choosing the variant
+
+| Value type | Use |
+|---|---|
+| Numeric (temperature, pressure, setpoint) | `NullShedNumeric` |
+| Boolean (run status, alarm contact) | `NullShedBoolean` |
+| String (model, fault text, batch code) | `NullShedString` |
+| Enum (mode, fan speed, valve position) | `NullShedEnum` |
 
 ### Pitfalls
 
 - **`holdMillis=0` disables the hold** — the component becomes a pass-through.
 - If `enabled=false`, no shedding happens at all.
-
----
-
-## 6. NullShedBoolean — hold, then release
-
-Same behaviour as `NullShedNumeric`, for boolean inputs.
-
-### Palette
-
-![NullShedBoolean in palette](docs/images/P_06_NullShedBoolean_palette.png)
-
-### Wire Sheet
-
-![NullShedBoolean wire sheet](docs/images/06_NullShedBoolean_wiresheet.png)
-
-### Property sheet
-
-![NullShedBoolean properties](docs/images/05_shedboolean.png)
-
-### Properties and actions
-
-Identical to [`NullShedNumeric`](#5-nullshednumeric--hold-then-release): `in`, `out`,
-`holdMillis`, `lastChange`, `shedCount`, `enabled`; actions `shedNow`, `resetCounter`.
-
-### How to use it
-
-Link a boolean point's `out` into `in`, set `holdMillis`, and feed `out` onward. A typical
-use is a run-status point on a 4G device: the last known state is held through a dropout
-instead of flipping to null and alarming.
-
-### Tested result
-
-`holdMillis = 4000`, `true` written: `out` reads `true`, then `{null}` after four seconds,
-`shedCount = 1`.
-
----
-
-## 7. NullShedString — hold, then release
-
-Same behaviour as `NullShedNumeric`, for string inputs.
-
-### Palette
-
-![NullShedString in palette](docs/images/P_07_NullShedString_palette.png)
-
-### Wire Sheet
-
-![NullShedString wire sheet](docs/images/07_NullShedString_wiresheet.png)
-
-### Property sheet
-
-![NullShedString properties](docs/images/06_shedstring.png)
-
-### Properties and actions
-
-Identical to [`NullShedNumeric`](#5-nullshednumeric--hold-then-release).
-
-### How to use it
-
-Use it on text points — device model strings, fault messages, batch codes — where a null
-would blank an operator display.
-
-### Tested result
-
-`holdMillis = 4000`, `"RUNNING"` written: `out` reads `RUNNING`, then `{null}` after four
-seconds, `shedCount = 1`.
-
----
-
-## 8. NullShedEnum — hold, then release
-
-Same behaviour as `NullShedNumeric`, for enum inputs.
-
-### Palette
-
-![NullShedEnum in palette](docs/images/P_08_NullShedEnum_palette.png)
-
-### Wire Sheet
-
-![NullShedEnum wire sheet](docs/images/08_NullShedEnum_wiresheet.png)
-
-### Property sheet
-
-![NullShedEnum properties](docs/images/07_shedenum.png)
-
-### Properties and actions
-
-Identical to [`NullShedNumeric`](#5-nullshednumeric--hold-then-release).
-
-### How to use it
-
-Link the enum point's `out` into `in`. **Feed it by link, not by write** — see the pitfall
-below.
-
-### Tested result
-
-Logic verified: the hold timer and `shedNow` behave exactly as in the numeric version.
-
-### Pitfalls
-
 - On the tested station, `control:EnumWritable` rejects external writes to its `StatusEnum`
   slot with `BDynamicEnum cannot be cast to BStatusEnum`. Feed `NullShedEnum.in` by **link**
   from a driver or parent component rather than writing it directly.
