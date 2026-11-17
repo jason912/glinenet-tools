@@ -5,10 +5,9 @@
 A free, MIT-licensed Niagara 4 module with **8 utility components** for building automation
 integration work.
 
-Each component solves one recurring job in BAS engineering: splitting a status word into
-alarms, picking the worst of seven chillers, mapping a Modbus bit mask to a Niagara enum,
-riding out a 4G dropout without firing a false alarm, or wiring forty points without dragging
-forty links by hand.
+Each component solves one recurring job: splitting a status word into alarms, picking the
+worst of seven chillers, mapping a Modbus bit mask to a Niagara enum, riding out a 4G dropout
+without firing a false alarm, or wiring forty points without dragging forty links by hand.
 
 ---
 
@@ -23,28 +22,37 @@ forty links by hand.
 | Module name | `glinenetTools` |
 | Package | `com.glinenet.tools` |
 | Palette folder | `GlineNetTools` |
-
-Palette folder `GlineNetTools` — drag any component from it into your station.
+| Type prefix | `gnt:` |
 
 ---
 
-## The components in one view
+## Where the components live
+
+All eight appear under the **`GlineNetTools`** folder in the Workbench palette.
+
+![Palette overview](docs/images/P0_palette_tree.png)
+
+Drag a component from that folder into a Wire Sheet to create an instance.
+
+---
+
+## The eight components
 
 ![Wire Sheet overview](docs/images/00_wiresheet.png)
 
-*All eight components in one folder. `BatchLinker` in the middle; the two numeric constants
-and two numeric writables on the right are the demo set used for the link test.*
+*All eight placed in one folder. Each section below shows its palette entry, its Wire Sheet
+appearance and its property sheet.*
 
 | Type | Purpose | Category |
 |---|---|---|
-| [`BatchLinker`](#1-batchlinker--create-links-in-bulk) | Create point-to-point links in bulk from ORD queries | Efficiency |
+| [`BatchLinker`](#1-batchlinker--create-links-in-bulk) | Create point-to-point links in bulk | Efficiency |
 | [`BitDecode16`](#2-bitdecode16--split-a-16-bit-word) | Split a 16-bit word into 16 booleans | Decoding |
 | [`Sort7`](#3-sort7--rank-seven-inputs) | Sort 7 inputs, report which channel won | Selection |
 | [`EnumBits`](#4-enumbits--enum-set--bit-mask) | Convert enum sets ↔ integer bit masks | Protocol mapping |
-| [`NullShedNumeric`](#5-nullshed-family--hold-then-release) | Hold last value, release to null after timeout | Comms debounce |
-| [`NullShedBoolean`](#5-nullshed-family--hold-then-release) | Same, boolean | Comms debounce |
-| [`NullShedString`](#5-nullshed-family--hold-then-release) | Same, string | Comms debounce |
-| [`NullShedEnum`](#5-nullshed-family--hold-then-release) | Same, enum | Comms debounce |
+| [`NullShedNumeric`](#5-nullshednumeric--hold-then-release) | Hold last value, release after timeout | Comms debounce |
+| [`NullShedBoolean`](#6-nullshedboolean--hold-then-release) | Same, boolean | Comms debounce |
+| [`NullShedString`](#7-nullshedstring--hold-then-release) | Same, string | Comms debounce |
+| [`NullShedEnum`](#8-nullshedenum--hold-then-release) | Same, enum | Comms debounce |
 
 ---
 
@@ -57,7 +65,15 @@ Dragging forty links in the Wire Sheet is slow and easy to mis-pair. `BatchLinke
 ORD queries, resolves them into two component sets, creates every link, and tells you how
 many succeeded — plus the reason for any that failed.
 
-### Screenshot
+### Palette
+
+![BatchLinker in palette](docs/images/P_01_BatchLinker_palette.png)
+
+### Wire Sheet
+
+![BatchLinker wire sheet](docs/images/01_BatchLinker_wiresheet.png)
+
+### Property sheet
 
 ![BatchLinker properties](docs/images/08_batchlinker.png)
 
@@ -94,8 +110,8 @@ many succeeded — plus the reason for any that failed.
 1. Put your source components in one folder and your targets in another. Name them so the
    pairs match (e.g. `AHU1_SP` → `AHU1_SP`), or use `matchMode=order` if sequence is all
    that matters.
-2. Set `sourceOrd` and `targetOrd` to the **folder** ORDs. This form is recommended — it
-   expands to every child automatically.
+2. Set `sourceOrd` and `targetOrd` to the **folder** ORDs. This form expands to every child
+   automatically.
 3. Set `sourceSlot=out` and `targetSlot=in1`, or whichever slot your target type exposes.
 4. Set `enabled=true`, then invoke `linkAll`.
 5. Read `status`. If it reports `failed N`, open `detailLog` — it names the component and the
@@ -133,11 +149,9 @@ not prove data flows.
 
 ### Pitfalls
 
-- **The ORD must be complete.** A bare name like `SrcA` raises `Missing scheme name`. Write
-  the full `station:|slot:/...` form.
+- **The ORD must be complete.** A bare name like `SrcA` raises `Missing scheme name`.
 - **The target slot must exist on that type.** `control:NumericWritable` exposes `in1`…`in16`
-  and has **no** `in` slot — writing `in` returns `bad target slot 'in' on DstA`.
-  `control:NumericPoint` only has `out`, so it cannot be a target at all.
+  and has **no** `in` slot. `control:NumericPoint` only has `out` and cannot be a target.
 
 ---
 
@@ -149,10 +163,15 @@ A Modbus device returns one 16-bit status word where each bit means something di
 bit 0 = running, bit 3 = alarm, bit 10 = filter dirty. Downstream logic needs each bit as its
 own boolean point so it can be alarmed, trended and interlocked separately.
 
-`BitDecode16` takes one integer and exposes 16 separate booleans, plus both bytes and the
-hex/binary text for diagnostics.
+### Palette
 
-### Screenshot
+![BitDecode16 in palette](docs/images/P_02_BitDecode16_palette.png)
+
+### Wire Sheet
+
+![BitDecode16 wire sheet](docs/images/02_BitDecode16_wiresheet.png)
+
+### Property sheet
 
 ![BitDecode16 properties](docs/images/01_bitdecode16.png)
 
@@ -161,7 +180,7 @@ hex/binary text for diagnostics.
 | Property | Meaning |
 |---|---|
 | `in` | The integer to decode |
-| `bitOrder` | `lsb0` (default, `b0` = least significant bit) or `msb0` (`b0` = most significant) |
+| `bitOrder` | `lsb0` (default, `b0` = least significant bit) or `msb0` |
 | `invert` | Invert every output bit |
 | `b0` … `b15` | The 16 boolean outputs |
 | `lowByte` / `highByte` | The two bytes as integers |
@@ -189,14 +208,12 @@ hex/binary text for diagnostics.
 | true bits | b0, b3, b4, b5, b12, b13 |
 
 `0x3039` = `0011 0000 0011 1001`; bits 0, 3, 4, 5, 12, 13 are set — matches exactly.
-Switching to `msb0` reverses the bit numbering as expected.
 
 ### Pitfalls
 
 - If the vendor documents bit 0 as the **most** significant bit, set `bitOrder=msb0`.
   Getting this wrong mirrors all sixteen alarms.
-- `invert` inverts the whole word, not individual bits. Use it only when the device reports
-  active-low.
+- `invert` inverts the whole word, not individual bits.
 
 ---
 
@@ -208,10 +225,15 @@ Seven chillers report their load. You need the most-loaded one — and you need 
 **which** chiller it is. Sorting the numbers alone loses that information, so `Sort7` also
 outputs the original channel number for every result.
 
-The same component works for plant sequencing, "highest demand wins" logic, or finding the
-worst sensor in a group.
+### Palette
 
-### Screenshot
+![Sort7 in palette](docs/images/P_03_Sort7_palette.png)
+
+### Wire Sheet
+
+![Sort7 wire sheet](docs/images/03_Sort7_wiresheet.png)
+
+### Property sheet
 
 ![Sort7 properties](docs/images/02_sort7.png)
 
@@ -220,7 +242,7 @@ worst sensor in a group.
 | Property | Meaning |
 |---|---|
 | `in1` … `in7` | Up to seven inputs — link these, don't write them |
-| `activeCount` | How many inputs actually participate (1–7) |
+| `activeCount` | How many inputs participate (1–7) |
 | `descending` | `true` = largest first |
 | `holdMillis` | Stability wait before results update; **default 30000** |
 | `out1` … `out7` | Sorted values |
@@ -252,10 +274,9 @@ makes the result actionable.
 
 ### Pitfalls
 
-- **`holdMillis` defaults to 30 seconds.** This is the single most common "it doesn't work"
-  report. Set it to `0` when testing.
-- If `activeCount` is larger than the number of wired inputs, the nulls still count and can
-  occupy `out1`.
+- **`holdMillis` defaults to 30 seconds.** The most common "it doesn't work" report.
+- If `activeCount` is larger than the number of wired inputs, nulls count and can occupy
+  `out1`.
 
 ---
 
@@ -267,14 +288,19 @@ A BACnet or Modbus device reports a set of states as one integer bit mask (value
 bits 0, 2 and 5). Niagara wants to present that as a multi-select enum point. Sometimes you
 need the reverse: the operator picks three enum members and you must write back the integer.
 
-`EnumBits` converts both ways using bit arithmetic on ordinals 0–31 — no string round-trip,
-so it stays fast and cannot mangle names.
+### Palette
 
-### Screenshot
+![EnumBits in palette](docs/images/P_04_EnumBits_palette.png)
+
+### Wire Sheet
+
+![EnumBits wire sheet](docs/images/04_EnumBits_wiresheet.png)
+
+### Property sheet
 
 ![EnumBits properties](docs/images/03_enumbits.png)
 
-*`Enum In` reads back as `bit0, bit3, bit7` — the named range is live, not raw integers.*
+*`Enum In` reads back as named bits, not raw integers.*
 
 ### Properties
 
@@ -321,34 +347,34 @@ component through these two slots.
 
 - Writing the enum property directly over REST returns
   `BEnumRange cannot be cast to BEnumSet`; over oBIX, `BEnumSet cannot be cast to BIEnum`.
-  Use the tag slots instead.
-- Ordinals are 0–31 only. Bit 32 and above are not represented.
+- Ordinals are 0–31 only.
 
 ---
 
-## 5. NullShed family — hold, then release
+## 5. NullShedNumeric — hold, then release
 
 ### What it is for
 
 A 4G-connected device drops out for 30 seconds and the raw point goes null. If that null
-reaches your alarm logic immediately you get a false "sensor failed" alarm, an operator phone
-call, and a nuisance ticket — every time the modem hiccups.
+reaches your alarm logic immediately you get a false "sensor failed" alarm and a nuisance
+ticket — every time the modem hiccups.
 
-`NullShedNumeric`, `NullShedBoolean`, `NullShedString` and `NullShedEnum` keep the last valid
-value flowing for `holdMillis`, and only release a null once the timeout really expires. They
-also count how many times that happened, so you can see the dropout rate.
+`NullShedNumeric` keeps the last valid value flowing for `holdMillis`, and only releases a
+null once the timeout really expires.
 
-### Screenshots
+### Palette
 
-![NullShedNumeric](docs/images/04_shednumeric.png)
+![NullShedNumeric in palette](docs/images/P_05_NullShedNumeric_palette.png)
 
-![NullShedBoolean](docs/images/05_shedboolean.png)
+### Wire Sheet
 
-![NullShedString](docs/images/06_shedstring.png)
+![NullShedNumeric wire sheet](docs/images/05_NullShedNumeric_wiresheet.png)
 
-![NullShedEnum](docs/images/07_shedenum.png)
+### Property sheet
 
-### Properties — identical across the four types
+![NullShedNumeric properties](docs/images/04_shednumeric.png)
+
+### Properties
 
 | Property | Meaning |
 |---|---|
@@ -368,13 +394,11 @@ also count how many times that happened, so you can see the dropout rate.
 
 ### How to use it
 
-1. Pick the type matching your point: numeric, boolean, string or enum.
-2. Link the driver's `out` into `in`.
-3. Set `holdMillis` slightly longer than the worst dropout you want to ride out. A 4G device
+1. Link the driver's `out` into `in`.
+2. Set `holdMillis` slightly longer than the worst dropout you want to ride out. A 4G device
    that drops for ~30 s calls for 45000–60000 ms.
-4. Link `out` onward to your alarm / trend / logic. Everything downstream now sees a steady
-   value through short dropouts.
-5. Watch `shedCount` over a week — that is your real dropout count, and a good health metric.
+3. Link `out` onward to your alarm / trend / logic.
+4. Watch `shedCount` over a week — that is your real dropout count, and a good health metric.
 
 ### Tested result
 
@@ -383,25 +407,117 @@ also count how many times that happened, so you can see the dropout rate.
 - `out` reads `88.50` immediately
 - six seconds later `out` is `{null}` and `shedCount = 1`
 
-Both paths were verified: `shedNow` releases instantly, and the timer releases on its own —
-the automatic path is the one production depends on.
+### Pitfalls
+
+- **`holdMillis=0` disables the hold** — the component becomes a pass-through.
+- If `enabled=false`, no shedding happens at all.
+
+---
+
+## 6. NullShedBoolean — hold, then release
+
+Same behaviour as `NullShedNumeric`, for boolean inputs.
+
+### Palette
+
+![NullShedBoolean in palette](docs/images/P_06_NullShedBoolean_palette.png)
+
+### Wire Sheet
+
+![NullShedBoolean wire sheet](docs/images/06_NullShedBoolean_wiresheet.png)
+
+### Property sheet
+
+![NullShedBoolean properties](docs/images/05_shedboolean.png)
+
+### Properties and actions
+
+Identical to [`NullShedNumeric`](#5-nullshednumeric--hold-then-release): `in`, `out`,
+`holdMillis`, `lastChange`, `shedCount`, `enabled`; actions `shedNow`, `resetCounter`.
+
+### How to use it
+
+Link a boolean point's `out` into `in`, set `holdMillis`, and feed `out` onward. A typical
+use is a run-status point on a 4G device: the last known state is held through a dropout
+instead of flipping to null and alarming.
+
+### Tested result
+
+`holdMillis = 4000`, `true` written: `out` reads `true`, then `{null}` after four seconds,
+`shedCount = 1`.
+
+---
+
+## 7. NullShedString — hold, then release
+
+Same behaviour as `NullShedNumeric`, for string inputs.
+
+### Palette
+
+![NullShedString in palette](docs/images/P_07_NullShedString_palette.png)
+
+### Wire Sheet
+
+![NullShedString wire sheet](docs/images/07_NullShedString_wiresheet.png)
+
+### Property sheet
+
+![NullShedString properties](docs/images/06_shedstring.png)
+
+### Properties and actions
+
+Identical to [`NullShedNumeric`](#5-nullshednumeric--hold-then-release).
+
+### How to use it
+
+Use it on text points — device model strings, fault messages, batch codes — where a null
+would blank an operator display.
+
+### Tested result
+
+`holdMillis = 4000`, `"RUNNING"` written: `out` reads `RUNNING`, then `{null}` after four
+seconds, `shedCount = 1`.
+
+---
+
+## 8. NullShedEnum — hold, then release
+
+Same behaviour as `NullShedNumeric`, for enum inputs.
+
+### Palette
+
+![NullShedEnum in palette](docs/images/P_08_NullShedEnum_palette.png)
+
+### Wire Sheet
+
+![NullShedEnum wire sheet](docs/images/08_NullShedEnum_wiresheet.png)
+
+### Property sheet
+
+![NullShedEnum properties](docs/images/07_shedenum.png)
+
+### Properties and actions
+
+Identical to [`NullShedNumeric`](#5-nullshednumeric--hold-then-release).
+
+### How to use it
+
+Link the enum point's `out` into `in`. **Feed it by link, not by write** — see the pitfall
+below.
+
+### Tested result
+
+Logic verified: the hold timer and `shedNow` behave exactly as in the numeric version.
 
 ### Pitfalls
 
-- **`holdMillis=0` disables the hold.** The component becomes a pass-through. Useful for
-  testing, wrong for production.
-- If `enabled=false`, no shedding happens at all.
-- **`NullShedEnum` and writable enum points:** on the tested station, `control:EnumWritable`
-  rejects external writes to its `StatusEnum` slot (`BDynamicEnum cannot be cast to
-  BStatusEnum`). Feed `NullShedEnum.in` by **link** from a driver or parent component rather
-  than writing it directly.
+- On the tested station, `control:EnumWritable` rejects external writes to its `StatusEnum`
+  slot with `BDynamicEnum cannot be cast to BStatusEnum`. Feed `NullShedEnum.in` by **link**
+  from a driver or parent component rather than writing it directly.
 
 ---
 
 ## Driving the components from REST
-
-Every slot is readable and writable through the station's REST API v2, which is how you
-configure forty similar points in one call instead of forty dialogs.
 
 ```
 Endpoint POST http://<host>:8083/api/batch
@@ -445,7 +561,6 @@ Auth HTTP Basic
 ```
 
 `BStatus*` slots such as `in` and `out` cannot be PUT directly — they must be fed by a link.
-Read them; don't write them.
 
 ---
 
@@ -454,7 +569,7 @@ Read them; don't write them.
 | Symptom | Cause | Fix |
 |---|---|---|
 | `Missing scheme name` | ORD given as a bare name | Use the full `station:\|slot:/...` form |
-| `bad target slot 'in'` | That type has no `in` | `NumericWritable` uses `in1`…`in16`; `NumericPoint` cannot be a target |
+| `bad target slot 'in'` | That type has no `in` | `NumericWritable` uses `in1`…`in16` |
 | `empty String` | Used `NAME` instead of `V` | Rename the field to `V` |
 | `BEnumRange cannot be cast to BEnumSet` | Writing a `BEnumSet` slot over REST | Use `enumInTags` |
 | `BEnumSet cannot be cast to BIEnum` | Same, over oBIX | Use `enumInTags` |
