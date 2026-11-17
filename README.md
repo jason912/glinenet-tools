@@ -1,17 +1,35 @@
-# Free Niagara 4 Module JAR — glinenetTools
+# Niagara Free JAR Tools — Free Open-Source Niagara 4 Module Pack
 
-**Eight drop-in Workbench components that save hours of point-by-point wiring.**
+### 🆓 **Free Niagara JAR Tool. No licence fee. No key. No registration. No expiry.**
 
-**Free and MIT licensed — no licence fee, no licence key, no registration, no expiry.
-Use it on any Niagara 4 station, in commercial projects included.**
+**8 drop-in Workbench components for Niagara 4** — built for the jobs every BAS integrator
+does over and over: bulk link creation, bit decoding, 7-way sorting, enum ↔ bitmask mapping,
+and riding out comms dropouts without false alarms.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Niagara 4](https://img.shields.io/badge/Niagara-4.14-blue.svg)](#download)
-[![Components](https://img.shields.io/badge/components-8-brightgreen.svg)](#the-palette)
-[![JAR](https://img.shields.io/badge/download-.jar-orange.svg)](#download)
+[![Free](https://img.shields.io/badge/price-FREE-brightgreen.svg)](#download)
+[![Components](https://img.shields.io/badge/components-8-blueviolet.svg)](#the-palette)
+[![Download](https://img.shields.io/badge/download-.jar-orange.svg)](#download)
 
-If you have ever dragged forty links by hand, split a status word with a Program block, or
-watched a false alarm fire because a 4G modem hiccupped — this module is for you.
+> **Module name:** `glinenetTools` · **Palette folder:** `GlineNetTools` · **Type prefix:** `gnt:`
+> **JAR:** `glinenetTools-rt-signed.jar` — signed, ready to drop into `<Niagara>/modules/`
+
+---
+
+## Why this exists
+
+If you have ever…
+
+- **dragged forty links by hand** one Wire Sheet at a time
+- built a **Program block just to split a 16-bit status word** into individual alarms
+- **lost a 4G or Modbus point to null** for ten seconds and got a nuisance alarm ticket
+- written the same **enum ↔ bitmask conversion** for the fifth project in a row
+- needed **"which of my seven chillers is the loaded one"** and got only the number, not the name
+
+…this pack is for you.
+
+**Free for commercial use. MIT licensed. No strings.**
 
 ---
 
