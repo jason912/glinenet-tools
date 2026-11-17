@@ -1,13 +1,17 @@
-# glinenetTools
+# Free Niagara 4 Module JAR — glinenetTools
+
+**Eight drop-in Workbench components that save hours of point-by-point wiring.**
+
+**Free and MIT licensed — no licence fee, no licence key, no registration, no expiry.
+Use it on any Niagara 4 station, in commercial projects included.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Niagara 4](https://img.shields.io/badge/Niagara-4.14-blue.svg)](#download)
+[![Components](https://img.shields.io/badge/components-8-brightgreen.svg)](#the-palette)
+[![JAR](https://img.shields.io/badge/download-.jar-orange.svg)](#download)
 
-A free, MIT-licensed Niagara 4 module with **8 utility components** for building automation
-integration work.
-
-Each component solves one recurring job: splitting a status word into alarms, picking the
-worst of seven chillers, mapping a Modbus bit mask to a Niagara enum, riding out a 4G dropout
-without firing a false alarm, or wiring forty points without dragging forty links by hand.
+If you have ever dragged forty links by hand, split a status word with a Program block, or
+watched a false alarm fire because a 4G modem hiccupped — this module is for you.
 
 ---
 
